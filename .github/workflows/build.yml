@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+# Licensed to the Ed-Fi Alliance under one or more agreements.
+# The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
+# See the LICENSE and NOTICES files in the project root for more information.
+
+name: SQL Server POC
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+env:
+  SQLSERVER_SA_PASS: "not very secret"
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+steps:
+  - name: Start Ubuntu container for SQLServer 2017 Express
+    run: |
+      docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ env.SQLSERVER_SA_PASS }}" -e "MSSQL_PID=Express" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-latest
+
+  - name: Checkout code
+    uses: actions/checkout@v2
+
+  - name: Test SQL access
+    run: |
+      sqlcmd -S localhost -U sa -P ${{ env.SQLSERVER_SA_PASS }} -Q select * from sys.databases
