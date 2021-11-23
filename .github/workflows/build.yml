@@ -22,4 +22,4 @@ jobs:
 
     - name: Test SQL access
       run: |
-        sqlcmd -S "(LocalDB)\MSSQLLocalDB" -Q "select * from sys.databases"
+        sqlcmd -S "(LocalDB)\MSSQLLocalDB" -Q "select * from sys.databases" -l 60 -d master -E
