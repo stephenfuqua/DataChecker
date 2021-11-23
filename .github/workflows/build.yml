@@ -13,20 +13,15 @@ on:
   workflow_dispatch:
 
 env:
-  SQLSERVER_SA_PASS: "not very secret"
 
 jobs:
   build:
     runs-on: windows-latest
 
-steps:
-  - name: Start Ubuntu container for SQLServer 2017 Express
-    run: |
-      docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=${{ env.SQLSERVER_SA_PASS }}" -e "MSSQL_PID=Express" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-  - name: Checkout code
-    uses: actions/checkout@v2
-
-  - name: Test SQL access
-    run: |
-      sqlcmd -S localhost -U sa -P ${{ env.SQLSERVER_SA_PASS }} -Q select * from sys.databases
+    - name: Test SQL access
+      run: |
+        sqlcmd -S "(LocalDB)\MSSQLLocalDB" -Q "select * from sys.databases"
